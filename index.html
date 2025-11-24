@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>መንፈሳዊ መዝሙሮች</title>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- የቀለም እና የቅርጽ መቼቶች --- */
+        :root {
+            --primary-red: #d50000;
+            --dark-red: #8a0000;
+            --accent-gold: #ffd700;
+            --white: #ffffff;
+            --bg-tint: #fff5f5;
+            --text-dark: #2d2d2d;
+            --shadow: 0 10px 30px rgba(213, 0, 0, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans Ethiopic', sans-serif;
+            background-color: var(--bg-tint);
+            color: var(--text-dark);
+            line-height: 1.8;
+            overflow-x: hidden;
+            /* Background Pattern */
+            background-image: 
+                radial-gradient(circle at 100% 0%, rgba(213, 0, 0, 0.05) 10%, transparent 10%), 
+                radial-gradient(circle at 0% 100%, rgba(213, 0, 0, 0.05) 10%, transparent 10%),
+                linear-gradient(135deg, #ffffff 25%, transparent 25%) -50px 0,
+                linear-gradient(225deg, #ffffff 25%, transparent 25%) -50px 0;
+            background-size: 100px 100px;
+            background-color: #fff0f0;
+            min-height: 100vh;
+        }
+
+        /* --- ራስጌ (Header) --- */
+        header {
+            background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
+            color: var(--white);
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-bottom-left-radius: 50% 20px;
+            border-bottom-right-radius: 50% 20px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        header::before {
+            content: '\f654';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 15rem;
+            color: rgba(255, 255, 255, 0.1);
+            animation: rotateSlow 60s linear infinite;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* --- እይታዎች (Views) --- */
+        /* ዋናው ገጽ (Home) እና የግጥም ገጽ (Lyrics) */
+        #home-view {
+            display: block; /* መጀመሪያ ላይ ይታያል */
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        #lyrics-view {
+            display: none; /* መጀመሪያ ላይ ተደብቋል */
+            animation: slideUp 0.5s ease-out;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+
+        /* --- የርዕሶች ዝርዝር (Navigation Grid) --- */
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            padding: 0 20px;
+        }
+
+        .titles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .song-btn {
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-dark);
+            border: none;
+            padding: 20px 10px;
+            text-align: center;
+            border-radius: 15px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-family: inherit;
+        }
+
+        .song-btn i {
+            font-size: 1.8rem;
+            color: var(--primary-red);
+            transition: 0.3s;
+        }
+
+        .song-btn:hover {
+            transform: translateY(-5px);
+            border-bottom: 3px solid var(--primary-red);
+            background: var(--white);
+            box-shadow: 0 8px 20px rgba(213, 0, 0, 0.15);
+        }
+
+        /* --- የግጥም ሳጥን (Lyrics Content Box) --- */
+        .song-content {
+            background-color: var(--white);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            display: none; /* ሁሉም ግጥሞች መጀመሪያ ተደብቀዋል */
+            border: 1px solid rgba(213, 0, 0, 0.05);
+        }
+
+        /* የሚታየው ግጥም ብቻ ይህ class ይኖረዋል */
+        .song-content.active {
+            display: block;
+        }
+
+        .song-content::before {
+            content: '\f654';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            color: rgba(213, 0, 0, 0.03);
+            pointer-events: none;
+        }
+
+        .song-title {
+            color: var(--primary-red);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2rem;
+            font-weight: 700;
+            border-bottom: 2px dashed var(--accent-gold);
+            padding-bottom: 15px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .lyrics-text {
+            white-space: pre-wrap;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #444;
+            font-weight: 500;
+            line-height: 2.2;
+        }
+
+        /* --- የመመለሻ ቁልፍ (Back Button) --- */
+        .back-btn-container {
+            margin-bottom: 20px;
+        }
+
+        .back-btn {
+            background: var(--white);
+            color: var(--primary-red);
+            border: 2px solid var(--primary-red);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            font-family: inherit;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-red);
+            color: var(--white);
+            transform: translateX(-5px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            background: #1a1a1a;
+            color: #888;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            border-top: 5px solid var(--primary-red);
+        }
+
+        @keyframes rotateSlow { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- ሞባይል ማስተካከያ --- */
+        @media (max-width: 600px) {
+            header { padding: 30px 15px; }
+            header h1 { font-size: 1.6rem; }
+            header p { font-size: 0.9rem; }
+            
+            .titles-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .song-btn { padding: 15px 5px; font-size: 0.85rem; min-height: 90px; }
+            .song-btn i { font-size: 1.5rem; margin-bottom: 5px; }
+
+            .song-content { padding: 30px 15px; }
+            .song-title { font-size: 1.5rem; }
+            .lyrics-text { font-size: 1rem; line-height: 1.8; }
+            
+            .back-btn { padding: 8px 15px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>መንፈሳዊ መዝሙሮች</h1>
+        <p>የተመረጡ የመዝሙር ግጥሞች ስብስብ</p>
+    </header>
+
+    <!-- ዋናው የመዝሙር ዝርዝር ገጽ (HOME VIEW) -->
+    <div id="home-view">
+        <div class="nav-container">
+            <div class="titles-grid">
+                <!-- Buttons trigger Javascript function -->
+                <button class="song-btn" onclick="openSong('song1')"><i class="fas fa-cloud-sun"></i> ማራናታ</button>
+                <button class="song-btn" onclick="openSong('song2')"><i class="fas fa-shield-heart"></i> አልታወክም</button>
+                <button class="song-btn" onclick="openSong('song3')"><i class="fas fa-cross"></i> ካህናችን</button>
+                <button class="song-btn" onclick="openSong('song4')"><i class="fas fa-heart"></i> ወደድከኝ</button>
+                <button class="song-btn" onclick="openSong('song5')"><i class="fas fa-hands-praying"></i> ተመስገን</button>
+                <button class="song-btn" onclick="openSong('song6')"><i class="fas fa-church"></i> ቤተ-ክርስቲያን</button>
+                <button class="song-btn" onclick="openSong('song7')"><i class="fas fa-hand-fist"></i> ክንድ ሆይ ተነስ</button>
+                <button class="song-btn" onclick="openSong('song8')"><i class="fas fa-shoe-prints"></i> እከተልሃለው</button>
+                <button class="song-btn" onclick="openSong('song9')"><i class="fas fa-file-signature"></i> ተሽሮልኛል</button>
+                <button class="song-btn" onclick="openSong('song10')"><i class="fas fa-face-smile-beam"></i> ለታመኑት ደስታን</button>
+                <button class="song-btn" onclick="openSong('song11')"><i class="fas fa-gem"></i> አንተ ማትለወጥ</button>
+                <button class="song-btn" onclick="openSong('song12')"><i class="fas fa-check-double"></i> መርጠኸኝ ነዉ</button>
+                <button class="song-btn" onclick="openSong('song13')"><i class="fas fa-infinity"></i> አልፋ ኦ ሜጋ</button>
+                <button class="song-btn" onclick="openSong('song14')"><i class="fas fa-dove"></i> ምህረትህ በዛ</button>
+                <button class="song-btn" onclick="openSong('song15')"><i class="fas fa-bullhorn"></i> ማዳኑን ልናገር</button>
+                <button class="song-btn" onclick="openSong('song16')"><i class="fas fa-coins"></i> ከወርቅ ከእንቁ</button>
+                <button class="song-btn" onclick="openSong('song17')"><i class="fas fa-heart-pulse"></i> ይሄ ነዉ ፍቅር</button>
+                <button class="song-btn" onclick="openSong('song18')"><i class="fas fa-book-bible"></i> የእምነቴ ጀማሪ</button>
+                <button class="song-btn" onclick="openSong('song19')"><i class="fas fa-wind"></i> መንፈስ ቅዱስ</button>
+                <button class="song-btn" onclick="openSong('song20')"><i class="fas fa-person-praying"></i> በክርስቶስ</button>
+                <button class="song-btn" onclick="openSong('song21')"><i class="fas fa-ring"></i> ጋብቻ</button>
+                <button class="song-btn" onclick="openSong('song22')"><i class="fas fa-crown"></i> ይገባሀል ክብር</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- የግጥም ማሳያ ገጽ (LYRICS VIEW) - መጀመሪያ ላይ ተደብቋል -->
+    <div id="lyrics-view">
+        
+        <!-- የመመለሻ ቁልፍ -->
+        <div class="back-btn-container">
+            <button class="back-btn" onclick="goHome()">
+                <i class="fas fa-arrow-left"></i> ወደ ኋላ ተመለስ
+            </button>
+        </div>
+
+        <!-- ግጥሞች (ሁሉም እዚህ አሉ፣ ግን ተደብቀዋል) -->
+        <div id="song1" class="song-content">
+            <h2 class="song-title">ማራናታ</h2>
+            <div class="lyrics-text">
+ማራናታ ማራናታ እንላለን ማራናታ
+ተነስተን ነቅተን ከመንፈሱ ጋራ
+
+ይመጣል ኢየሱስ በክብር በግርማ
+በመላክት ታጅቦ በሚያስደንቅ ዜማ
+ጆሮ ወዳልሰማዉ አይን ወዳላየዉ
+ዉዳችን ሊወስደን ጊዜዉ በደጅ ነዉ
+አዝ…
+
+የተስፋ ቃል አለን ጌታ የሰጠን
+መቶ እንዲወስደን የተናገረን
+እንጠብቀዋለን ይመጣል ዉዳችን
+ለክብር ሊወስደን ወዳዘጋጀልን
+አዝ…
+
+ዉዱ እንግዳችን የምንጠብቅህ
+ፊት ለፊት ልናይህ የምንናፍቅህ
+እጅጉን ናፍቀናል ናልን ሙሽራችን
+ካንተ ጋር ለመኖር ሆኗል ጉጉታችን
+            </div>
+        </div>
+
+        <div id="song2" class="song-content">
+            <h2 class="song-title">አልታወክም በእርሱ እታመናለሁ</h2>
+            <div class="lyrics-text">
+አልታወክም በእርሱ እታመናለሁ
+በሰጠኝ ቃል ላይ ልቤን አኖራለሁ
+ታማኝ ነዉ አምላኬ ተስፋን የሰጠኝ
+እንዳለዉ የሚያደርግ በቃሉ ሚገኝ
+አዝ….
+
+የዘገየች ተስፋ ልብን ብታዝልም
+ይታመናል ጌታ ወደ ሌላ አልሄድም
+በጊዜዉ እስኪገኝ እጠብቀዋለሁ
+ሁሉ ዉብ ይሆናል ጌታን አምነዋለሁ
+አዝ….
+
+እረዳት ፈልጌ ወደ ተራሮች
+እጌን አላነሳም ለአማልክቶች
+አምላኬ በዊ ነዉ ይህን አይቻለሁ
+የሞተዉን ነገር በህይወት ኑር ሲለዉ አዝ….
+
+ሸንበቆ አይደለም እኔ የተደገፍኩት
+ዘላለም ፅኑ ኪዳኑ የማይሞት የሁሉ ጌታ ነዉ ሁሉን የሚገዛ
+መቼም አይገመትም ኤልሻዳይ ነዉ ጌታ አዝ….
+
+ሁሉን ቻዩ ጌታ ታምኜበታለሁ
+ፈፅሞ አይጥለኝም ተደግፌዋለሁ
+እርስቴ ነዉና የህይወቴ ዋና
+በእኔ ህይወት ላይ ብቻዉን ገናና
+አዝ….
+            </div>
+        </div>
+
+        <div id="song3" class="song-content">
+            <h2 class="song-title">ካህናችን</h2>
+            <div class="lyrics-text">
+ነዉር በሌለበት ቅዱስ ደም
+በማይሻር ክህነት ለዘለዓለም
+አንድጊዜ ራሱን አቅርቧል
+ኢየሱስ ቤዛችን ሆኗል
+
+ካህናችን ኢየሱስ
+ንፁህ መስዋዕታችን
+ለዘለዓለም ሊቀ ካህናችን (*2)
+
+ሞት ከልክሎ አያስቀረዉም
+ዘመን አልፎት አያስረጀዉም
+አይለወጥም የፀና ነዉ
+ዛሬም ይሰራል ህያዉ ነዉ
+ካህናችን ኢየሱስ…….
+
+አናቀርብም መስዋዕት ዕለት ዕለት
+እንደ አሮጌዉ ኪዳንለድህነት
+በሚሻል ደም ኢየሱስ ቀርቧል
+በልጁ አብ ተቀብሎናል
+አብን ደስ አሰኘ *2
+ንፁህ አደረገን
+ከአብ አስታረቀን
+
+የተመጠዉ በአብ ቀኝ
+በቅዱስ ደሙ የዋጀን
+ህሊናችንን ቀድሷል
+በደሙ መፍሰስ አድኖናል
+አብን ደስ አሰኘ…
+            </div>
+        </div>
+
+        <div id="song4" class="song-content">
+            <h2 class="song-title">ወደድከኝ</h2>
+            <div class="lyrics-text">
+አባቴ አንተ ልጅህን በወደድክበት ፍቅር
+ከመታወቅ በሚያልፍ ፍቅር
+ልጅህን እስከመስጠት ወደድከኝ
+ወደድከኝ
+ወደድከኝ*4
+
+እኔ አሮጥኩ ወደ ምህረት
+አልፈለኩም የህይወት መንገድ
+ስቅበዘበቅ አገኘኸኝ
+ወደ ሂይወት የመለስከኝ
+አዳንከኝ*2
+የህይወት እንጀራ ሆንከኝ
+በቀኝህም አስቀመጥከኝ
+አባት ሆንከኝ አሳረፍከኝ
+ወደድከኝ
+ወደድከኝ*4
+
+ማንይችል ነበር ሊያድነኝ
+በአብም ፊት ሊቆምልኝ
+ጌታ ኢየሱስ ባትመጣልኝ
+ማንይከፍል ነበር የሃጢያቴን እዳ
+የገዛ ክንድህ ባይመጣ
+ልጅህ ወዶ ባይቀጣ
+እንዴት አመልጥ ነበር ከዘላለም እዳ
+
+እገረማለሁ የሆነልኝን እያሰብኩ
+እደነቃለሁ አልችልምና ልለምደዉ
+በየማለዳዉ ምረትህ አዲስ ነዉ*6
+
+ሲኖር ሳለ በእግዚአብሔር መልክ
+ፍፁም ሰዉ ሆነ ፍፁም አምላክ
+አልቆጠረም እንደመቀማት
+ክብሩን ሲተዉ ስለኔ ሃጢያት
+ኢየሱስ*4
+ወደር በሌለዉ ፍቅር ወደድከኝ
+ነፍስን እስከመስጠት ወደድከኝ
+ፅድቄን ፈፅመኸዉ አዳንከኝ
+ኢየሱስ*4
+            </div>
+        </div>
+
+        <div id="song5" class="song-content">
+            <h2 class="song-title">ተመስገን</h2>
+            <div class="lyrics-text">
+ተመስገን እንዲሁ ወደኸኛል
+በኢየሱስ አብዘንድ መግባት ሆኖልኛል
+ተመስገን በልጅህ አይተኸኛል
+ምረትህ በዝቶልኛል
+
+የአለምን ጥበብ ልታሳፍር
+በደካሞች ወደህ ልትከብር
+ሞኞችን የተናቁትን መርጠሃል
+ጥበብህን ለኔ ገልጠሃል
+ተመስገን………….
+
+ከፍጥረቴ የቁጣ ልጅ ነበርኩ
+እንድትወደኝ ፅድቅን ያላወኩ
+እንዲሁ ወደኸኝ ፀድቂያለሁ
+ተቤዥተኸኝ ከሞት ድኛለሁ
+ተመስገን………….
+
+የበረሃ ወይራ ሳለሁኝ
+ከወይኑ ላፈራ እድል አገኘሁ
+የራኩኝ ቀርቤ ታይቻለሁ
+በክርስቶስ ልጅህ ሆኛለሁ
+ተመስገን………….
+
+ተገልጧል የምረትህ ባለጠግነት
+ተትረፍርፎ በዝቶ አየሁት
+ያኖረኝ እስካሁን በቤትህ
+ያልጠፋሁት በአንተ ምህረት
+            </div>
+        </div>
+
+        <div id="song6" class="song-content">
+            <h2 class="song-title">የቅዱሳን ህብረት ቤተ-ክርስቲያን</h2>
+            <div class="lyrics-text">
+የቅዱሳን ህብረት ቤተ-ክርስቲያን
+የበጉ ሙሽራ የሆንሽ ሆይ
+ያለነውር አርጎ የቀደሰሽ
+አለ በዙፋኑ የሚያይሽ/ታደጊሽ(2)
+
+በአንድያ ልጁ በፀናው አለት
+ተመስርተሻል በደም መሰረት
+ላይቋቋምሽ ምንም ላያጠፋሽ
+ከማይጠፋው ዘር ወለደሽ
+ከአንቺ ጋር አለ መንፈስ ቅዱስ
+እስከ ፍፃሜው እየመራሽ
+ለቤዛ ቀንም አትሞሻል
+በማፅናናቱ ከቦሻል
+
+በሚያስጨንቅ ዘመን ብትኖሪም
+አለና ንጉስሽ አትፍሪ
+የፍፃሜው ዘመን መከራ ላያጠፋሽ
+አምላክሽ በዙሪያሽ ሆኗዋል ቅጥርሽ
+
+በፊት መጨማደድ ላትጠቁሪ
+ያለድካም በፅድቅ እንድትኖሪ
+ራሱን ሰውቷል ኢየሱስ
+ዛሬም ሀይልሽ ይታደስ
+            </div>
+        </div>
+
+        <div id="song7" class="song-content">
+            <h2 class="song-title">የእግዚአብሔር ክንድ ሆይ ተነስ</h2>
+            <div class="lyrics-text">
+ተነስ የእግዚአብሔር ክንድ ሆይ ተነስ
+ተነስ ሃይልህን ልበስ
+ተነስ እንደጥንቱ ዘመን
+ተነስ ተነስ ሃይልን ልበስ
+
+ረአብን ቆራርጠህ ዘንዶውን የወጋህ
+ጥልቁን ታላቅ ባህር ደረቅ ያደረግህ
+በአስደናቂ ክንድህ ህዝብህን የመራህ
+ልናይህ ወደናል ልዑል ሆይ ተነስተህ
+ተነስ አሜን
+
+አክሊል አቀዳጅተህ የማይነጥፍ ደስታ
+ህዝብህን የመራህ በቀንም በማታ
+ሃዘን ለቅሶ ዋይታ ከህዝብህ አርቀህ
+በከበረው ክንድህ ዛሬም ትመራለህ
+ተነስ አሜን
+
+ክንድህ ለመንግስታት ፍትህን ያመጣል
+ጽድቅና ምህረትህ ወደ ምድር ቀርቧል
+ፍርድህም ለህዝብህ ብርሃን ይሆናል
+የአንተ መነሳት ምድሪቱን ያጽናናል
+ተነስ አሜን
+ምድርን የሸፈነ ድቅድ ቁጨለማ
+በጦርነት ረሀብ ሊያደርጋት ባድማ
+ከቶ እንዳያጠፋን ምህረት ይምጣልን
+ሁሉም ደህና ይሁን ልዑል ተነሳልን
+ተነስ አሜን
+            </div>
+        </div>
+
+        <div id="song8" class="song-content">
+            <h2 class="song-title">አንተን መርጫለው እከተልሃለው</h2>
+            <div class="lyrics-text">
+በአለም ከሚገኝ ጥቂት ደሰታ
+በአለም ካለከፍታ
+አንተን መርጫለው እከተልሃለው
+
+ግዜያዊ በሆነ በዚህ ድንኳን
+በብዙ መከራ ባዝንም እንኳን
+ፀንተህ ያለፍከውን አያለው
+እኔም ፀንቼ እሮጣለሁ
+አዝ..
+
+ለግዜው ነገርራሴን ባስለምደው
+ጥቂት ይጠቅመኛል ለሚጠፋው
+አንተን መምሰል ግን መልካም ነው
+ለዘላለም ማትረፊ ያነው
+አዝ..
+
+የገባኝ ይህ እውነት ያመንኩት
+ብዙዎች ጨክነው ሞቱለት
+እኔም አላቀለው ደም ተከፍሎበታል
+ክርስቶስ በደሙ መስርቶታል
+አዝ..
+
+ከድካሙ አይቶ ብዙፍ ሬን
+ታግሷል እየሱስ መከራን
+እኔም በትግስት እሮጣለው
+ክርስትናዬን ፈፅማለሁ
+አዝ..
+            </div>
+        </div>
+
+        <div id="song9" class="song-content">
+            <h2 class="song-title">ተሽሮልኛል</h2>
+            <div class="lyrics-text">
+ሳለህ ታላቅ የባሪያን መልክ ይዘህ መጣህ
+ተጨንቀሀል ወደኸኝ ስለኔ ተሰቃየህ
+ቆስለሀል ለሀጢያቴ በመስቀል ነፍስህን ሰተህ
+ኢየሱስ ሰበብ አለኝ ተመስገን እንድልህ
+
+ተሽሮልኛል ተመስገን
+የሀጢያት እዳ ተመስገን
+ገብቻለሁ ተመስገን
+ወደ ሰማይ ተመስገን
+ኡየሱስ ተመስገን
+አባቴ ተመስገን
+
+በቀራኒዮ ጎለጎታ ተራራ ላይ
+ተሰቃየህ ወስደኸው የኔን ስቃይ
+በደሌንም ባንተ ላይ አኑረህ
+አስወገድከው ከመንገዴ ጠርቀህ
+አዝ……..
+
+ሁሉን የፈጸምከው ጨርሰህ
+በመታዘዝ የአብን ፍቃድ ፈጽመህ
+የታየው በአብ ፊት ልታጸድቀኝ
+ለአንተ ከነፍሴ ምስጋና አለኝ
+አዝ…..
+አንድ ልጅህን ሰውተህ ታረከን
+የፋሲካውን በግ አርደህ ተቀነልከን
+ተስማምተው ምህረትና እውነት
+በኢየሱስ ገብተናል ወደረፍት
+
+ተሽሮልኛል ተመስገን
+የሀጢያት እዳ ተመስገን
+ገብቻለሁ ተመስገን
+ወደ ሰማይ ተመስገን
+አብ አባት ተመስገን
+ኢየሱስ ተመስገን
+መንፈስ ቅዱስ ተመስገን
+            </div>
+        </div>
+
+        <div id="song10" class="song-content">
+            <h2 class="song-title">ለታመኑት ደስታን</h2>
+            <div class="lyrics-text">
+ከምንጠብቀው አብልጦ
+ሊያደርግ በሚችል በሃያል ጌታ
+ነገር ሁሉ ለበጎ እንዲደረግ እናውቃለን
+ህዝቡን ከመከራ በሃይሉ ሚታደግ
+ለማዳን ሚነሳ ጌታ ፀባኦት
+
+በስሙ ለተጠራው መጋደጃ ሆነ
+ለታመኑት ደስታን
+ዘላለም አስታጠቀ
+ስሙንም ለሚወዱ
+ሰላምን አቀዳጀ
+መንገዳቸውን በፊቱ አቀና
+ዛሬም በዚህ ዘመን አለ ከኛም ጋራ
+
+አዝ…..
+የከበበን ሁሉ ተስፋ ባሰቆረጠን
+መገፋት በበዛው በሚያስጨንቅ ዘመን
+ደስታችን ሆነልን
+ሰላማችን ሆነልን
+ከጭንቀታችንም እጅግ አሳረፈን
+እግዚአብሔር አከናውኖልን
+ዛሬም በዚህዘ መንጌታችን አለልን
+
+አዝ…..
+በመንገድ አንዝልም በስሙ ታምነን
+ስንጠራው ይሰማናል ከቅዱሱ ዙፋን
+ሰምቶንም ይመልሳል አይቶንም ይራራል
+ካስጨነቀንም ሁሉ ያሳርፈናል
+ሰባራውን ይጠግናል
+ያዘነውን ያፅናናል
+እግዚአብሔር ይጎበኘናል
+ዛሬም በዚህ ዘመን ጌታችን ያየናል
+            </div>
+        </div>
+
+        <div id="song11" class="song-content">
+            <h2 class="song-title">አንተ ማትለወጥ ጌታ</h2>
+            <div class="lyrics-text">
+አንተ ማትለወጥ ጌታ
+የማትለወጥ የሱስ*2
+
+ስወድቅ ፈጥነህ ያነሳኸኝ
+በሃዘኔ ያፅናናኸኝ
+ሁሉ ርቆኝ ስቀር ብቻዬን
+አለሁልህ ያልከኝ
+አዝ..
+ሁሉም ተለዋዉጧል በምድር ላይ
+በሰጠኸኝ ዘመን እኔ ሳይ
+አንተ ግን በዙፋንህ አለህ
+ጊዜ ሳይለዉጥህ
+አዝ…
+
+ሰማያት እንኳን ያረጃሉ
+ተጠቅልለዉ ይወሰዳሉ
+አንተ ግን የሁሉ ፈጣሪ
+ለዘለአለም ኗሪ አዝ…
+            </div>
+        </div>
+
+        <div id="song12" class="song-content">
+            <h2 class="song-title">መርጠኸኝ ነዉ</h2>
+            <div class="lyrics-text">
+መርጠኸኝ ነዉ በክርስቶስ አለም ሳይፈጠር
+በፊትህ ቅዱስ ሆኞ ያለነዉር እንድኖር
+መርጠኸኝ ነዉ በክርስቶስ አለም ሳይፈጠር
+በፊትህ ቅዱስ ሆኞ ያለነዉር እንድኖር
+
+ስቅበዘበዝ ጠፍቼ ከነፍሴ እረኛ
+መተህ ሁሉን ትተህ እኔኑ ፍለጋ
+ነፍሴን የመለስካት ወደ ጠባቂዬ
+ምህረት ብዙ ነዉ ምስክር ነኝ እኔ
+አዝ…
+
+የቁጣ ልጅ ሳለሁ ከፍጥረቴ
+ከፊትህ የሸሸሁ በሃጢያቴ
+በምረትህ ስለሆንክ ባለጠጋ
+ህይወትን ሰጠኸኝ ከኢየሱስጋ
+አዝ…
+
+ሳለሁ በሞት ጥላ ክብርህ ጎሎኝ
+ሳልፈግህ አግኝተህ ፅድቅህ አገዘኝ
+ክንድህም ተገልጦ መዳን ሆኖልኛል
+ከስራም ያልሆነ ፀጋህ በዝቶልኛል
+አዝ…
+
+በገለጥከዉ ጊዜ እኔን መወደድህን
+ህያዉ ሆነች ነፍሴ ፀድቄ በልጅህ
+ባደረኩተረ ስራ አይደለም መዳኔ
+ከምህረት በቀር ትምከት የለኝ እኔ
+አዝ…
+
+በሩጫም ማይገኝ ወይም በፍለጋ
+ምህረት ካንተ ነዉ ከምህረት ጌታ
+እንዲሁም ወደኸኝ ይቅር ብለኸኛል
+በኢየሱስ ስራም ህይወት ሰተኸኛል
+አዝ…
+            </div>
+        </div>
+
+        <div id="song13" class="song-content">
+            <h2 class="song-title">አልፋ ኦ ሜጋ ነዉ</h2>
+            <div class="lyrics-text">
+ሞቷል ብለዉ ለቀበሩት
+ተስፋ ቆርጠዉ በር ለዘጉት
+ምስራች አለ ይነገር ለአለም የሚሆን
+ምስራች አለ ይነገር ለአለም የሚሆን
+
+ተነስቷል ተስቷል ተነስቷል ኢየሱስ ድል ነስቷል
+ተነስቷል ተስቷል ተነስቷል
+ኢየሱስ ድል ነስቷል
+ፍፁም አምላክ
+ፍፁምም ሰዉ
+ዘላለማዊ ኤልሻዳይ ንጉስ ነዉ
+አልፋ ኦ ሜጋ ነዉ*4
+
+በክብር በሃይል
+ያረገዉ ሰማይ
+ክብር ስልጣን የሱ ነዉ
+ሞትንን መዉጊያ ቆረጠዉ
+ክብር ስልጣን የሱ ነዉ
+ሞትንን መዉጊያ ቆረጠዉ
+ተስቷል…..
+
+ሞቶ የቀረዉን አይደለም የማመልከዉ
+ሞትን ድል የነሳ ኢየሱስ ጌታ ነዉ
+ሞቶ የቀረዉን አይደለም የማመልከዉ
+ሞትን ድል የነሳ ኢየሱስ ጌታ ነዉ
+
+የሞትን ጣር አጥፍቶ የተነሳ
+7ቱን ማህተም የፈታ
+ኢየሱስ ኢየሱስ ኢየሱስ
+ኢየሱስ ጌታ
+ተነስቷል…
+            </div>
+        </div>
+
+        <div id="song14" class="song-content">
+            <h2 class="song-title">አቤት ምህረትህ ለኛ በዛ</h2>
+            <div class="lyrics-text">
+አቤት ምህረትህ ለኛ በዛ
+በዘመናችንም ያንተ እገዛ
+ተመስገን ፍቅርህ በዝቶልናል
+ተመስገን ፀጋህ አግዞናል
+ተመስገን ፍቅርህ በዝቶልናል
+ተመስገን ፀጋህ አግዞናል
+
+በጨለማ ሳለን በሞት ፍርሃት ሆነን
+ከፅድቅህም መንግስት እጅግ ካንተ ርቀን
+አገኘሀን ራስህ ፈልገህ
+ልጅ አረከን ህይወትን ሰተህ
+አዝ…
+የዚህ አለም ገዢ ሚሰለጥንብን
+ባለመታዘዝም የቁጣ ልጅ ነበርን
+ዋጋን ከፍለህ ተቤዤኸን
+ከባርነት ቀንበር ነፃ አወጣኸን
+አዝ…
+
+በብዙ ቅኔ በብዙ ዜማ
+የምስጋና ድምፅ እናሰማ
+እንድንዘምረዉ ያንተን ምህረት
+ተደርጎልናል ብዙ ቸርነት
+አዝ…
+            </div>
+        </div>
+
+        <div id="song15" class="song-content">
+            <h2 class="song-title">ማዳኑን ልናገር</h2>
+            <div class="lyrics-text">
+ማዳኑን ልናገር የመስቀሉን ስራ
+በጣ ክፍሌ ልቁም ሆኜ ባለተራ
+እድሉን ካገኘዉ ተራዉ ከደረሰኝ
+ስለሱ ማወራዉ ምዘምረዉ አለኝ
+እድሉን ካገኘዉ ተራዉ ከደረሰኝ
+ስለሱ ማወራዉ ምናገረዉ አለኝ
+
+
+ልደርድር ነገና አዲስ ቅኔቀኝ
+እንድዘምርለት በፊቱ ላቆመኝ
+የተደረገልኝ የምለዉ ብዙ አለኝ
+ይገዋል እና በሞቱ ላዳነኝ
+አዝ….
+
+የተመረጠዉ ዘር አሮንና ቤቱ
+ትላንት በተራቸዉ ያገለገሉቱ
+የሉምና ዛሬ እኔነኝ ተረኛ
+በጣ ክፍሌ ልቁም ላገልግል በፀጋ
+አዝ….
+በተሻለ ኪዳን በመስቀሉ ስራ
+ካህን አድርጎኛል ከእሱጋ ልሰራ 
+በፀጋዉ በርትቼ አገለግላለዉ
+ሞቱን ትንሳኤዉን ላለም አዉጃለሁ
+አዝ….
+            </div>
+        </div>
+
+        <div id="song16" class="song-content">
+            <h2 class="song-title">ከወርቅ ከእንቁ የሚበልጥ</h2>
+            <div class="lyrics-text">
+ከወርቅ ከእንቁ የሚበልጥ
+በአለምም ካለዉ ዉዱ ነገር
+ወሰን ገደብ የሌለዉ
+የተወደድንበት የጌታ ፍቅር ነዉ
+ወሰን ገደብ የሌለዉ
+የጌታ ፍቅር ነዉ
+
+በጎ ሰዉ ምናልባት በጭንቅ ይገኛል
+ለፃድቅ ወዳጁም ይሰዋ ይሆናል
+ከዚህ ሚበልጥ ፍቅር ከሰዉ አይገኝም
+ጌታ ኢየሱስ ግን ሞቷል ለጠላቱም
+
+ስለኛ ሊቀጣ
+ወደ አለም መጣ
+ሳለን ማይገባን
+ጌታችን ሞተልን
+
+ከእኛ ባልሆነ ከማንነታችን
+በማይሻር ፍቅር ወደደን ጌታችን
+ስፋቱ ጥልቀጡ ከመታወቅ ያልፋል
+ፀንቶ የሚኖር ነዉ እኛም ታምነነዋል
+አዝ….
+
+የማግኘት ሁሉ ጥግ በረከት ነዉ ፍቅሩ
+ማጣትም አይለየዉ ነዉ ሁሉ በሁሉ
+ከፍታ ዝቅታ ከፍጥረትም መሃል
+ከፍቅሩ ሊለየን እንዳይችል አዉቀናል
+ከፍታ ዝቅታ ከፍጥረትም መሃል
+ከፍቅሩ ሊለየን እንዳይችል አዉቀናል
+
+ፍቅሩ ነዉ ሃያል
+ከሁሉም ይበልጣል
+እጅጉን ልዩ ነዉ
+ወሰን ገደብ የለዉ
+አዝ….
+            </div>
+        </div>
+
+        <div id="song17" class="song-content">
+            <h2 class="song-title">ይሄ ነዉ ፍቅር</h2>
+            <div class="lyrics-text">
+በመስቀል የገለጥከዉን ፍቅር 
+ባልመልሰዉም ችዬ ልኩን 
+በገባኝ ባወኩህ ልክ 
+አምላኬ ወደድኩህ  /2× 
+
+አዝማች
+      ይሔ ነዉ ፍቅር እርሱ እንደወደደኝ 
+      ነፍሱን እንዳኖረ ለኔ እንደሰጠኝ 
+      እንደዚህ ነዉ ፍቅር እርሱ እንደወደደኝ 
+      ጠላት የሆንኩትን ወዳጅ እንዳረገኝ 
+
+ገና በሃጢአት በሞት ሳለሁኝ 
+ከክርስቶስ ጋራ ህይወት ሰጠኸኝ
+አስቀድመህ አንተ በልጅህ ወደህ 
+አቅም አገኘሁ እኔም ልወድህ /2× 
+
+ልጅ ተብዬ ልጠራ ፍቅርህን ሰጠኸኝ
+በዘለአለም ኪዳንህ ላጠላኝ ወደድከኝ
+እኔም በዘመኔ እወድሀለሁ 
+ለፍቅር መሞትን ካንተ ስላየሁ/2× 
+
+ከደረትህ ስጠጋ ይበልጥ ሳዉቅህ 
+ጨምሯል መዉደዴ ከትላንት ሳዉቅህ
+የማይሰለች መዉደድ ማይለወጥ ፍቅር 
+ያለህ አንተ ብቻ አንተ እግዚአብሔር /2×
+
+
+ብደክም ብበረታ ብወድቅና ብነሳ
+ብወርድ በሸለቆ ብቆምም በከፍታ
+በምንም ሁኔታ አንተ ለኔ ያዉ ነሀ 
+እግዚአብሔር አምላኬ አንተ ልዮ ፍቅር ነህ
+            </div>
+        </div>
+
+        <div id="song18" class="song-content">
+            <h2 class="song-title">የእምነቴ ጀማሪ</h2>
+            <div class="lyrics-text">
+በአይኔ ፊት ዘወትር ተስለህ
+በልቤም ላይ ኑርበት ደምቀህ
+ዘመኔ ይሁን ለፈቃድህ
+መጠቀሚያ ዕቃ የክብርህ
+
+ሁሉን ፈፅመህ አብን ያከበርከው
+እስከሞት ታዘህ ደስ ያሰኘኸው 
+የእምነቴ ጀማሪ ምሳሌዬ
+የእምነቴ ጀማሪ መምህሬ
+ልከተልህ አንተኑ ብዬ
+
+በብዙ መባከን ዋናውን ረውስቼ
+የሚያስፈልገውን ያን ችላ ብዬ
+ለከንቱ እየሮጥኩ እንዳያልክ ዘመኔ
+ልማር ፈቃድህን እግርህ ስር ቁጭ ብዬ
+ልወቅ ፈቃድህን ከደረትህ ጠጋ ብዬ
+
+ሁሁሁሁሁሁሁሁሁሁሁሁሁሁሁ
+
+በሰጠኸኝ መክሊት ሳላተርፍ ደብቄው 
+ፀጋህን በመጣል በከንቱ ቀብሬው 
+ስትመጣ በድንገት በሀፍረት እንዳልቆም
+ቀን ሳለ ልትጋ ዛሬ ሳይጨልም*2
+
+በዚአለም ስኖር በተሰጠኝ ዕድል
+ልኑር እንደሚገባ ለሚመጣው መንግስት
+እንግዳ ነኝና እስኪፈርስ ድንኳኔ
+ዘለአለሜን ልስራ በዚኛው ዘመኔ*2
+            </div>
+        </div>
+
+        <div id="song19" class="song-content">
+            <h2 class="song-title">መንፈስ ቅዱስ</h2>
+            <div class="lyrics-text">
+ወልድን አክባሪ ስጦታ ከላይ 
+አቅጣጫ ያለህ በመንገዴ ላይ
+ምዉል ማድርብህ የነፍሴ መሰማሪያ
+መንፈስ ቅዱስ ነህ የሰላም መኖሪያ
+
+ህይወት ምለዉ ምናገረዉ
+ማወራዉ ምዘምረዉ
+መንገድ ያለዉ በመንፈስህ ነዉ
+ትርጉም ያለዉ ጉዞ 
+ተስፋ ያለዉ ኑሮ
+እረፍት ያለዉ  በህልዉናህ ነዉ
+
+ስለዚህ በኔ ላይ እንዲሆን ምናፍቅዉ
+ማንም ማይተካዉ መንፈስህን ነዉ
+ስለዚህ በኔ ላይ ሁሌ ምፈልገዉ
+ማንማ የማይሞላዉ መገኘትህን ነዉ
+
+የግድ መንፈስ ቅዱስ እፈልግሃለሁ
+በቃ ያላንተ እንዴት እኖራለሁ            አዝማች
+የግድ መንፈስ ቅዱስ እፈልግሃለሁ
+ከሌለህ የለሁም ይህን አዉቂያለሁ
+
+ይኸዉ ሰጥቻለሁ ህይወቴ ያንተ ነዉ
+ያላንተ ህልዉና መኖርስ ምንድን ነዉ?
+ዉረሰዉ ኑርበት መላዉ እኔነቴን 
+መሻቴን እንድፈፅም አትተዉልኝ ስፍራን
+
+አጥንትን ከማፍሰስ በላይ ርሃብ
+የዉሃ ጠብታን ከሚያስናፍቅ በላይ ጥማት
+ለመኖር ከሚያጓጓ በላይ እስትንፋስ
+መኖር ያለህበት ላልወጣ ካለህበት
+ረሃቤ ጥማቴ ከስትንፋሴ ይልቅ ጉጉቴ
+
+ትዝ እስካይለኝ ያለሁበት
+ምድርን እስከምረሳት
+በመንፈስህ ዉስጥ ልዋኝ ልስመጥ
+በመገኘትህ በህልዉናህ መካከል ልገኝ
+
+የግድ መንፈስ ቅዱስ እፈልግሃለሁ
+ በቃ ያላንተ እንዴት እኖራለሁ           አዝማች
+የግድ መንፈስ ቅዱስ እፈልግሃለሁ
+ከሌለህ የለሁም ይህን አዉቂያለሁ
+            </div>
+        </div>
+
+        <div id="song20" class="song-content">
+            <h2 class="song-title">በክርስቶስ</h2>
+            <div class="lyrics-text">
+በክርስቶስ የባረከን
+በቀኙም ያስቀመጠን
+አብ አባት ይባረክ
+አሜን ይባረክ *2
+
+ስለኛ ሃጢያት ልጁ መስቀል ሞቷል
+እኛን ለማፅደቅ ከሞት ተነስቷል
+አገልጋይ ነዉ የእዉነተኛይቱ ድንኳን
+ቀድሞን የገባዉ በኩር ሆኖ ሰማይ
+በመሃላ ፀንቷል ስለኛ ሊታይ
+አዝ…
+
+ሁሉ በርሱ እንዲኖር እዳይጠፋ 
+በመስቀሉ ደም ሰላም አረገን
+የራቅነዉን በልጁ ሞት አቀረበን
+ወደ መንግስቱ በፍቅሩ ሳበን
+በኢየሱስ አባት ሆነን
+አዝ.. 
+
+ስጦታዉ አይደለም እንደበደላችን
+ምህረቱ አብልጦ በዝቷል በህይወታችን
+በአንዱ መተላለፍ ሁላችን እነደሞትን
+በአንዱ መታዘዝ ህይወት በዛልን
+በኢየሱስ ህይወት ሆነልን
+            </div>
+        </div>
+
+        <div id="song21" class="song-content">
+            <h2 class="song-title">ጋብቻ</h2>
+            <div class="lyrics-text">
+አምላክ የሚወደው 
+መልካም ነው ያለው
+ፍፁም ክቡር ነውር የሌለው
+ጋብቻ ንፁህ ነው
+ጋብቻ ክቡር ነው
+
+መሰረቱ እግዚያብሄር 
+ውብ አድርጎ የሰራው
+ፍፁም ክቡር ነውር የሌለው
+ጋብቻ ንፁህ ነው
+ጋብቻ ክቡር ነው
+
+አምላክ ሲፈጥር ከመጀመሪያው
+ወንድና ሴት አደረጋቸው
+ከእንግዲህ ሁለቱ አንድ ናቸው
+እግዚያብሄር ያጣመራቸው *2
+ከሰዎች ማንም እንዳይለያቸው
+እግዚያብሄር ነው ያጣመራቸው *2
+
+ዛሬም በኛ ዘንድ ይህን አሳየን
+በናንተ ህብረት ደስም አሰኘን
+ምስጋና ይብዛ ለዚድንቅ አምላክ
+በደስታችን ቀን ብቻውን ይድመቅ
+
+መልካም ሚያደርግ ለሚወደው 
+ራስ የሚሆን ሰው የሚሰጠው
+የሚባርከው እግዚያብሄር ነው *2
+መልካም ሚያደርግ ለሚወደው
+ረዳት ሚሆን ሰው የሚሰጠው
+የሚባርከው እግዚያብሄር ነው*2
+
+በረከታችሁን አይተን እኛም ደስ አለን 
+ልናመሰግን ጌታን አዲስ ቅኔን ተቀኘን
+ያረገላችሁን አይተን እኛም ደስ አለን
+ልናመሰግን ጌታን አዲስ ቅኔን ተቀኘን
+
+ጌታ ነውና አንድ ያረጋችሁ
+በእግዚያብሄር ደስ ይበላችሁ
+የሚበልጠውን የምድር በረከት ስለሰጣችሁ
+ምስጋና አቅርቡ እልል ብላችሁ
+
+ዛሬም ከኛ ዘንድ ምስጋና ወዶ
+አንድ አረጋችሁ በፍቅር ባርኮ
+ምስጋና ይብዛ ለዚህ ድንቅ አምላክ
+ደስታን የሰጠን ስሙ ይባረክ
+            </div>
+        </div>
+
+        <div id="song22" class="song-content">
+            <h2 class="song-title">ይገባሀል ክብር ምስጋና</h2>
+            <div class="lyrics-text">
+ይገባሀል ክብር ምስጋና
+ይገባሀል አምልኮ ስግደት
+ይገባዋል ክብር ውዳሴ
+ይገባዋል ለመድሐኒቴ 
+
+ቅዱስ ቅዱስ እያሉ መላዕክት ኪሩቤል
+ፊታቸውን ተከልለው ክብር ይሰጡሀል
+በክብር በሀይል ማን ይመስልሃል
+ከሁሉ በላይ ከፍ ብለሀል
+አዝ
+
+ከጥንት የታወቅህ በክብር በግርማ
+ዘላለም የምትኖር ኤልሻዳይ ነህና
+በዘመንህ ድካም እርጅናም የለህ
+አንተን የሚመስል እኛም አላየንም
+አዝ
+
+ከዘላለም በፊት ሳይኖር ሰማይ ምድር
+እግዚአብሄር አለ በሚያስደንቅ ክብር
+ዛሬም አልጎደለም ሙሉ ነው ክብርህ
+እኛም ደስ እያለን እንዘምርልህ
+አዝ
+
+ለትልቅነትህ የለህም እኩያ
+በሀይል በስልጣን አንተን የሚተካ
+አንድ ነህ እግዚአብሄር መለኪያም የለህ
+ምሳሌ የሚሆንህ ከቶ አይገኝም
+አዝ
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; መንፈሳዊ መዝሙሮች ስብስብ</p>
+    </footer>
+
+    <script>
+        const homeView = document.getElementById('home-view');
+        const lyricsView = document.getElementById('lyrics-view');
+        
+        // ይህ ፋንክሽን መዝሙሩ ሲነካ ይሰራና ወደ ግጥሙ ይወስዳል
+        function openSong(songId) {
+            // 1. ዋናውን ዝርዝር ደብቅ
+            homeView.style.display = 'none';
+            
+            // 2. የግጥም ማሳያውን ክፈት
+            lyricsView.style.display = 'block';
+            
+            // 3. ሁሉንም ግጥሞች ደብቅ
+            document.querySelectorAll('.song-content').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // 4. የተመረጠውን ግጥም ብቻ አሳይ
+            const activeSong = document.getElementById(songId);
+            if(activeSong) {
+                activeSong.classList.add('active');
+                window.scrollTo(0, 0); // ወደ ላይ ሸብ አድርግ
+            }
+        }
+
+        // ይህ ፋንክሽን "ወደ ኋላ" ሲነካ ወደ ዋናው ዝርዝር ይመልሳል
+        function goHome() {
+            lyricsView.style.display = 'none';
+            homeView.style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+
+</body>
+</html>
